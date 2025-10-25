@@ -8,8 +8,9 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 
 CREDIT = os.environ.get("CREDIT", "⌯ Prunus💋 | ×͜× |")
 # MongoDB Configuration
-DATABASE_NAME = os.environ.get("DATABASE_NAME", "add name")
-DATABASE_URL = os.environ.get("DATABASE_URL", "mongodb+srv://Dehghgfv-Thanos")  # Add your own atlas db
+DATABASE_NAME = os.environ.get("DATABASE_NAME", "ugdev_db")
+# Do not ship an invalid default. Require proper DATABASE_URL from environment.
+DATABASE_URL = os.environ.get("DATABASE_URL", "")  # e.g. mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
 MONGO_URL = DATABASE_URL  # For auth system
 
 # Owner and Admin Configuration
