@@ -14,6 +14,28 @@ from typing_extensions import Literal
 # Init colors for Windows
 colorama.init()
 
+def _validate_mongo_url(url: str) -> None:
+    """
+    Basic validation for MongoDB connection string to provide clearer errors.
+    Raises ValueError with guidance if invalid/missing.
+    """
+    if not url:
+        raise ValueError(
+            "Missing DATABASE_URL/MONGO_URL. Set environment variable DATABASE_URL with a valid MongoDB connection string.\n"
+            "Examples:\n"
+            "  mongodb+srv://<user>:<pass>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority\n"
+            "  mongodb://<user>:<pass>@host:27017/?authSource=admin"
+        )
+    if url.startswith("mongodb+srv://"):
+        # crude check: SRV hostname should include a dot and not be just a label
+        host_part = url[len("mongodb+srv://") :].split("/")[0]
+        if "." not in host_part:
+            raise ValueError(
+                f"Invalid SRV hostname '{host_part}' for 'mongodb+srv://'. "
+                "Use your Atlas cluster hostname, e.g. cluster0.xxxxx.mongodb.net. "
+                "If you intend to use a standalone host, switch to 'mongodb://' format."
+            )
+
 class Database:
     def __init__(self, max_retries: int = 3, retry_delay: float = 2.0):
         """
@@ -33,6 +55,13 @@ class Database:
         
     def _connect_with_retry(self, max_retries: int, retry_delay: float):
         """Establish MongoDB connection with retry mechanism"""
+        # Validate early to provide actionable feedback
+        try:
+            _validate_mongo_url(MONGO_URL)
+        except ValueError as ve:
+            print(f"{Fore.RED}✕ Configuration error: {ve}{Style.RESET_ALL}")
+            raise
+
         for attempt in range(1, max_retries + 1):
             try:
                 print(f"{Fore.YELLOW}⌛ Attempt {attempt}/{max_retries}: Connecting to MongoDB...{Style.RESET_ALL}")
@@ -52,7 +81,7 @@ class Database:
                 self.client.server_info()
                 
                 # Initialize database and collections
-                self.db = self.client.get_database('ugdev_db')
+                self.db = self.client.get_database(DATABASE_NAME or 'ugdev_db')
                 self.users = self.db['users']
                 self.settings = self.db['user_settings']
                 
