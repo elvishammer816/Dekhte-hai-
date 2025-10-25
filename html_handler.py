@@ -27,18 +27,20 @@ def categorize_urls(urls):
 
     for name, url in urls:
         new_url = url
-        if ("akamaized.net/" in url or "1942403233.rsc.cdn77.org/" in url) and ".pdf" not in url:
-            vid_id = url.split("/")[-2]
+        if "akamaized.net/" in url or "1942403233.rsc.cdn77.org/" in url:
             new_url = f"https://www.khanglobalstudies.com/player?src={url}"
             videos.append((name, new_url))
 
+        elif "d1d34p8vz63oiq.cloudfront.net/" in url:
+            new_url = f"https://anonymouspwplayer-0e5a3f512dec.herokuapp.com/pw?url={url}&token={your_working_token}"
+            videos.append((name, new_url))
+                    
         elif "youtube.com/embed" in url:
             yt_id = url.split("/")[-1]
             new_url = f"https://www.youtube.com/watch?v={yt_id}"
+            videos.append((name, new_url))
 
-        elif ".m3u8" in url:
-            videos.append((name, url))
-        elif ".mp4" in url:
+        elif ".m3u8" in url or ".mp4" in url:
             videos.append((name, url))
         elif "pdf" in url:
             pdfs.append((name, url))
@@ -49,13 +51,13 @@ def categorize_urls(urls):
 
 #=================================================================================================================================
 
-# Function to generate HTML file with Video.js player
+# Function to generate HTML file
 def generate_html(file_name, videos, pdfs, others):
     file_name_without_extension = os.path.splitext(file_name)[0]
 
-    video_links = "".join(f'<a href="#" onclick="playVideo(\'{url}\')">{name}</a>' for name, url in videos)
-    pdf_links = "".join(f'<a href="{url}" target="_blank">{name}</a>' for name, url in pdfs)
-    other_links = "".join(f'<a href="{url}" target="_blank">{name}</a>' for name, url in others)
+    video_links = "".join(f'<a href="#" onclick="playVideo(\'{url}\')">🎬 {name}</a>' for name, url in videos)
+    pdf_links = "".join(f'<a href="{url}" target="_blank">📄 {name}</a>' for name, url in pdfs)
+    other_links = "".join(f'<a href="{url}" target="_blank">🌐 {name}</a>' for name, url in others)
 
     html_template = f"""
 <!DOCTYPE html>
@@ -72,360 +74,189 @@ def generate_html(file_name, videos, pdfs, others):
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
+            font-size: 14px;
         }}
-
         body {{
-            background: #f5f7fa;
+            background: #f9f9f9;
             color: #333;
-            line-height: 1.6;
+            line-height: 1.4;
         }}
-
-        .header {{
+        header {{
             background: #1c1c1c;
             color: white;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }}
-
-        .subheading {{
             font-size: 16px;
-            margin-top: 10px;
-            color: #ccc;
-            font-weight: normal;
-        }}
-
-        .subheading a {{
-            color: #ffeb3b;
-            text-decoration: none;
             font-weight: bold;
         }}
-
+        header p {{
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 3px;
+        }}
         #video-player {{
-            margin: 20px auto;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background: #1c1c1c;
-            padding: 10px;
+            margin: 15px auto;
+            width: 95%;
+            max-width: 700px;
         }}
-
-        #url-input-container {{
-            display: none;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-        }}
-
-        #url-input-container input {{
-            width: 70%;
-            padding: 10px;
-            border: 2px solid #007bff;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-right: 10px;
-        }}
-
-        #url-input-container button {{
-            width: 25%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }}
-
-        #url-input-container button:hover {{
-            background: #0056b3;
-        }}
-
         .search-bar {{
-            margin: 20px auto;
-            width: 90%;
-            max-width: 600px;
+            margin: 15px auto;
+            width: 95%;
+            max-width: 500px;
             text-align: center;
         }}
-
         .search-bar input {{
             width: 100%;
-            padding: 10px;
-            border: 2px solid #007bff;
+            padding: 8px;
+            border: 1px solid #007bff;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
         }}
-
-        .no-results {{
-            color: red;
-            font-weight: bold;
-            margin-top: 20px;
-            text-align: center;
-            display: none;
-        }}
-
         .container {{
             display: flex;
             justify-content: space-around;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 800px;
+            margin: 15px auto;
+            width: 95%;
+            max-width: 700px;
         }}
-
         .tab {{
             flex: 1;
-            padding: 15px;
+            padding: 10px;
             background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 5px;
+            font-size: 14px;
+            margin: 0 3px;
             text-align: center;
-            margin: 0 5px;
         }}
-
         .tab:hover {{
             background: #007bff;
             color: white;
-            transform: translateY(-5px);
         }}
-
         .content {{
             display: none;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 800px;
+            margin: 15px auto;
+            width: 95%;
+            max-width: 700px;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }}
-
         .content h2 {{
-            font-size: 22px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 10px;
             color: #007bff;
         }}
-
-        .video-list, .pdf-list, .other-list {{
-            text-align: left;
-        }}
-
         .video-list a, .pdf-list a, .other-list a {{
             display: block;
-            padding: 10px;
-            background: #f5f7fa;
-            margin: 5px 0;
+            padding: 8px;
+            margin: 3px 0;
+            background: #f2f2f2;
             border-radius: 5px;
             text-decoration: none;
             color: #007bff;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-size: 13px;
         }}
-
         .video-list a:hover, .pdf-list a:hover, .other-list a:hover {{
             background: #007bff;
             color: white;
-            transform: translateX(10px);
         }}
-
-        .footer {{
-            margin-top: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 15px;
+        footer {{
+            margin-top: 20px;
+            font-size: 12px;
+            padding: 10px;
             background: #1c1c1c;
-            color: white;
+            color: #ddd;
             text-align: center;
-            border-radius: 10px;
-        }}
-
-        .footer a {{
-            color: #ffeb3b;
-            text-decoration: none;
-            font-weight: bold;
         }}
     </style>
 </head>
 <body>
-    <div class="header">
-        {file_name_without_extension}
-        <div class="subheading">📥 <b>Extracted By : {CREDIT}</b></div>
-    </div>
+    <header>
+        📚 {file_name_without_extension}
+        <p>|| {len(videos)} Videos • {len(pdfs)} PDFs • {len(others)} Others ||</p>
+    </header>
 
     <div id="video-player">
-        <video id="engineer-babu-player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
-            <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-            </p>
-        </video>
+        <video id="engineer-babu-player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360"></video>
     </div>
-
-    <div id="url-input-container">
-        <input type="text" id="url-input" placeholder="Enter video URL to play...">
-        <button onclick="playCustomUrl()">Play</button>
-    </div>
-
-    <button onclick="toggleUrlInput()" style="margin: 20px auto; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; display: block; width: 90%; max-width: 600px;">Enter Custom URL</button>
 
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Search for videos, PDFs, or other resources..." oninput="filterContent()">
     </div>
 
-    <div id="noResults" class="no-results">No results found.</div>
-
     <div class="container">
-        <div class="tab" onclick="showContent('videos')">Videos</div>
-        <div class="tab" onclick="showContent('pdfs')">PDFs</div>
-        <div class="tab" onclick="showContent('others')">Others</div>
+        <div class="tab" onclick="showContent('videos')">🎬 Videos</div>
+        <div class="tab" onclick="showContent('pdfs')">📄 PDFs</div>
+        <div class="tab" onclick="showContent('others')">🌐 Others</div>
     </div>
 
     <div id="videos" class="content">
-        <h2>All Video Lectures</h2>
-        <div class="video-list">
-            {video_links}
-        </div>
+        <h2>🎬 Video Lectures</h2>
+        <div class="video-list">{video_links}</div>
     </div>
 
     <div id="pdfs" class="content">
-        <h2>All PDFs</h2>
-        <div class="pdf-list">
-            {pdf_links}
-        </div>
+        <h2>📄 PDFs</h2>
+        <div class="pdf-list">{pdf_links}</div>
     </div>
 
     <div id="others" class="content">
-        <h2>Other Resources</h2>
-        <div class="other-list">
-            {other_links}
-        </div>
+        <h2>📦 Other Resources</h2>
+        <div class="other-list">{other_links}</div>
     </div>
 
-    <div class="footer"><b>Extracted By : {CREDIT}</b></div>
+    <footer>Extracted By ⌯ FʀᴏɴᴛMᴀɴ | ×͜× |</footer>
 
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
         const player = videojs('engineer-babu-player', {{
-            controls: true,
-            autoplay: false,
-            preload: 'auto',
-            fluid: true,
-            controlBar: {{
-                children: [
-                    'playToggle',
-                    'volumePanel',
-                    'currentTimeDisplay',
-                    'timeDivider',
-                    'durationDisplay',
-                    'progressControl',
-                    'liveDisplay',
-                    'remainingTimeDisplay',
-                    'customControlSpacer',
-                    'playbackRateMenuButton',
-                    'chaptersButton',
-                    'descriptionsButton',
-                    'subsCapsButton',
-                    'audioTrackButton',
-                    'fullscreenToggle'
-                ]
-            }}
+            controls: true, autoplay: false, preload: 'auto', fluid: true
         }});
-
         function playVideo(url) {{
             if (url.includes('.m3u8')) {{
-                document.getElementById('video-player').style.display = 'block';
                 player.src({{ src: url, type: 'application/x-mpegURL' }});
-                player.play().catch(() => {{
-                    window.open(url, '_blank');
-                }});
+                player.play().catch(() => window.open(url, '_blank'));
             }} else {{
                 window.open(url, '_blank');
             }}
         }}
-
-        function toggleUrlInput() {{
-            const urlInputContainer = document.getElementById('url-input-container');
-            urlInputContainer.style.display = urlInputContainer.style.display === 'none' ? 'block' : 'none';
-        }}
-
-        function playCustomUrl() {{
-            const url = document.getElementById('url-input').value;
-            if (url) {{
-                playVideo(url);
-            }}
-        }}
-
         function showContent(tabName) {{
-            const contents = document.querySelectorAll('.content');
-            contents.forEach(content => {{
-                content.style.display = 'none';
-            }});
-            const selectedContent = document.getElementById(tabName);
-            if (selectedContent) {{
-                selectedContent.style.display = 'block';
-            }}
+            document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
+            document.getElementById(tabName).style.display = 'block';
             filterContent();
         }}
-
         function filterContent() {{
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const categories = ['videos', 'pdfs', 'others'];
-            let hasResults = false;
-
-            categories.forEach(category => {{
-                const items = document.querySelectorAll(`#${{category}} .${{category}}-list a`);
-                let categoryHasResults = false;
-
+            const categories = ['videos','pdfs','others'];
+            categories.forEach(cat => {{
+                const items = document.querySelectorAll(`#${{cat}} .${{cat}}-list a`);
+                let catResult = false;
                 items.forEach(item => {{
-                    const itemText = item.textContent.toLowerCase();
-                    if (itemText.includes(searchTerm)) {{
-                        item.style.display = 'block';
-                        categoryHasResults = true;
-                        hasResults = true;
-                    }} else {{
-                        item.style.display = 'none';
-                    }}
+                    if (item.textContent.toLowerCase().includes(searchTerm)) {{
+                        item.style.display = 'block'; catResult = true;
+                    }} else item.style.display = 'none';
                 }});
-
-                const categoryHeading = document.querySelector(`#${{category}} h2`);
-                if (categoryHeading) {{
-                    categoryHeading.style.display = categoryHasResults ? 'block' : 'none';
-                }}
+                document.querySelector(`#${{cat}} h2`).style.display = catResult ? 'block' : 'none';
             }});
-
-            const noResultsMessage = document.getElementById('noResults');
-            if (noResultsMessage) {{
-                noResultsMessage.style.display = hasResults ? 'none' : 'block';
-            }}
         }}
-
-        document.addEventListener('DOMContentLoaded', () => {{
-            showContent('videos');
-        }});
+        document.addEventListener('DOMContentLoaded', () => showContent('videos'));
     </script>
 </body>
 </html>
     """
     return html_template
 
-# Function to download video using FFmpeg
+#==================================================================================================================================
+
+# Optional: Function to download video with FFmpeg
 def download_video(url, output_path):
     command = f"ffmpeg -i {url} -c copy {output_path}"
     subprocess.run(command, shell=True, check=True)
 
-
-
-
-#======================================================================================================================================================================================
+#==================================================================================================================================
 
 async def html_handler(bot: Client, message: Message):
     editable = await message.reply_text("𝐖𝐞𝐥𝐜𝐨𝐦𝐞! 𝐏𝐥𝐞𝐚𝐬𝐞 𝐮𝐩𝐥𝐨𝐚𝐝 𝐚 .𝐭𝐱𝐭 𝐟𝐢𝐥𝐞 𝐜𝐨𝐧𝐭𝐚𝐢𝐧𝐢𝐧𝐠 𝐔𝐑𝐋𝐬.✓")
@@ -442,7 +273,6 @@ async def html_handler(bot: Client, message: Message):
         file_content = f.read()
 
     urls = extract_names_and_urls(file_content)
-
     videos, pdfs, others = categorize_urls(urls)
 
     html_content = generate_html(file_name, videos, pdfs, others)
@@ -450,7 +280,9 @@ async def html_handler(bot: Client, message: Message):
     with open(html_file_path, "w") as f:
         f.write(html_content)
 
-    await message.reply_document(document=html_file_path, caption=f"✅𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲 𝐃𝐨𝐧𝐞!\n<blockquote><b>`{b_name}`</b></blockquote>\n❖**Open in Chrome.**\n\n🌟**Extracted By : {CREDIT}**")
+    await message.reply_document(
+        document=html_file_path, 
+        caption=f"🌐 𝐇𝐓𝐌𝐋 𝐅𝐢𝐥𝐞 𝐂𝐫𝐞𝐚𝐭𝐞𝐝!\n<blockquote><b>`{b_name}`</b></blockquote>\n🌟 Extracted By : {CREDIT}"
+    )
     os.remove(file_path)
     os.remove(html_file_path)
-    

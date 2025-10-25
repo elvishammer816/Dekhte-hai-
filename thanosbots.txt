@@ -1,0 +1,53 @@
+# pyrogram==2.0.106
+pyrofork==2.2.11
+tgcrypto==1.2.5
+pyromod==1.5.0
+pysocks==1.7.1
+asyncio
+
+# HTTP & scraping
+requests==2.31.0
+cloudscraper
+aiohttp
+aiofiles
+urllib3==2.0.3
+soupsieve==2.4.1
+beautifulsoup4
+certifi==2025.7.14
+charset-normalizer==3.3.2
+idna==3.6
+
+# Crypto & Security
+pycryptodome==3.18.0
+pyaes==1.6.1
+cryptography==42.0.5
+pyopenssl==24.1.0
+PyJWT==2.8.0
+
+# Video / Media
+yt-dlp==2025.06.30
+mutagen==1.46.0
+ffmpeg-python==0.2.0
+pillow==10.3.0
+m3u8==6.0.0
+pytube==15.0.0
+wget==3.2
+
+# Database & Caching
+motor
+pymongo
+umongo
+sqlalchemy
+async-lru==2.0.2
+certifi
+
+# Flask App (optional if using webhook/server)
+Flask
+gunicorn
+itsdangerous
+
+
+# Others
+pytz
+colorama
+reportlab

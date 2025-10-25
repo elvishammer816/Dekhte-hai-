@@ -1,61 +1,77 @@
+<p align="center">
+  <img src="https://files.catbox.moe/fh731v.jpg" alt="DEV-TXT-LEECH">
+</p>
 <h1 align="center">
-  ✨ SAINI DRM Bot ✨
+  <a href="https://github.com/Dev-Thanos/DEV-TXT-LEECH">DEV-TXT-LEECH 👨‍💻</a>
 </h1>
 
-<p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=18&pause=1000&color=00F7FF&center=true&vCenter=true&width=435&lines=Welcome+to+DRM+Bot+by+@nikhil.saini.khe" alt="Typing SVG" />
-</p>
+## **Main Repository**
 
----
+##### Dev Thanos.   [DEV-TXT-LEECH 👨‍💻](https://github.com/Dev-Thanos/DEV-TXT-LEECH)
 
-> 🔐 **Note:** CP DRM supported — Minimum quality **360p**  
-> 🚫 **Do not remove the credit tag**
 
----
 
-## 📜 Commands
 
-| Command | Description |
-|---------|-------------|
-| `/start` | Start the bot |
-| `/stop`  | Stop the bot |
-| `/help`  | Show help message |
 
----
+## _Deploy Via Buttons_
+<br>
+<details>
+  <summary><b>Deploy on Heroku</b></summary>
 
-## 🚀 Deployment Process
+- <b>Fork This Repo
+- Click on Deploy Easily
+- Press the below button to Fast deploy on Heroku</b>
 
-🎬 **Watch Full Deployment Tutorial:**  
-[![YouTube Video](https://img.shields.io/badge/Watch%20on-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/PYDtSTM6w44?si=noKPl7o4iU9SR_TO)
 
-### Step-by-Step:
-1. **Fork** the Repository  
-2. **Edit `vars.py`** — Fill in your `API_ID` and `API_HASH`  
-3. **Edit `README.md`** — Change the deploy button links to point to your own fork  
-4. Choose any platform and **Deploy** directly using the buttons below:
+   [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+- <b>Go to <a href="#mandatory-vars">variables tab</a> for more info on setting up environmental variables.</b></details>
 
----
+<details><summary><b>Deploy To Koyeb</b></summary>
+<br>
+<b>The fastest way to deploy the application is to click the Deploy to Koyeb button below.</b>
+<br>
+<br>
+<b>Go to https://uptimerobot.com/ and add a monitor to keep your bot alive.</b>
+<br>
+<br>
 
-## 📦 Deploy via Buttons
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/Dev-Thanos/DEV-TXT-LEECH&branch=main&name=DEV-TXT-LEECH)
+</details>
 
-[![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-blue?style=for-the-badge&logo=render)](https://render.com/deploy)  
-[![Deploy to Heroku](https://img.shields.io/badge/Deploy%20to-Heroku-purple?style=for-the-badge&logo=heroku)](https://www.heroku.com/deploy?template=https://github.com/nikhilsainiop/saini-txt-direct)  
-[![Deploy to Koyeb](https://img.shields.io/badge/Deploy%20to-Koyeb-black?style=for-the-badge&logo=koyeb)](https://app.koyeb.com/deploy?name=saini-txt-direct&repository=nikhilsainiop%2FSaini-txt-direct&branch=main&instance_type=free&instances_min=0)
+<details><summary><b>Deploy To Render</b></summary>
+<br>
+<b>
+Use these commands:
+<br>
+<br>
+• Build Command: <code>pip3 install -U -r requirements.txt</code>
+<br>
+<br>
+• Start Command: <code>python3 bot.py</code>
+<br>
+<br>
+Go to https://uptimerobot.com/ and add a monitor to keep your bot alive.
+<br>
+<br>
+Use these settings when adding a monitor:</b>
+<br>
+<br>
+<img src="https://telegra.ph/file/a79a156e44f43c9833b50.jpg" alt="render template">
+<br>
+<br>
+<b>Click on the below button to deploy directly to render ↓</b>
+<br>
+<br>
+<a href="https://render.com/deploy?repo=https://github.com/Dev-Thanos/DEV-TXT-LEECH/tree/main">
+<img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render">
+</a>
+</details>
 
----
 
-## 🤖 Bot Usernames
+## **Special Thanks to 💓**
 
-- [@saini_contact_bot](https://t.me/saini_contact_bot)
-- [@saini_file_store_bot](https://t.me/saini_file_store_bot)
 
----
 
-## 📂 Original Repositories
-
-- 🔗 [nikhilsainiop/saini-txt-direct](https://github.com/nikhilsainiop/saini-txt-direct)
-- 🔗 [cyberseller999/saini-txt-direct](https://github.com/cyberseller999/saini-txt-direct)
-
----
-
-> 👨‍💻 Created with ❤️ by [@nikhil.saini.khe](https://instagram.com/nikhil.saini.khe)
+- Thanks to [⌯ FʀᴏɴᴛMᴀɴ | ×͜× |](https://t.me/coderthanos) (myself) for modifying thiss Repo  .
+- Thanks to [Trio UG](https://t.me/triobots) for fast uploading method .  
+- Thanks to [NikhilL Saini](https://t.me/saini_contact_bot) for base repo & main repo 

@@ -1,106 +1,129 @@
-import random #NIKHIL SAINI BOTS
-import time #NIKHIL SAINI BOTS
-import math #NIKHIL SAINI BOTS
-import os #NIKHIL SAINI BOTS
-from vars import CREDIT #NIKHIL SAINI BOTS
-from pyrogram.errors import FloodWait #NIKHIL SAINI BOTS
-from datetime import datetime,timedelta #NIKHIL SAINI BOTS
+import random
+import time
+from pyrogram.errors import FloodWait
+from vars import CREDIT
 
-class Timer: #NIKHIL SAINI BOTS
-    def __init__(self, time_between=5): #NIKHIL SAINI BOTS
-        self.start_time = time.time() #NIKHIL SAINI BOTS
-        self.time_between = time_between #NIKHIL SAINI BOTS
+class Timer:
+    def __init__(self, time_between=5):
+        self.start_time = time.time()
+        self.time_between = time_between
 
-    def can_send(self): #NIKHIL SAINI BOTS
-        if time.time() > (self.start_time + self.time_between): #NIKHIL SAINI BOTS
-            self.start_time = time.time() #NIKHIL SAINI BOTS
-            return True #NIKHIL SAINI BOTS
-        return False #NIKHIL SAINI BOTS
+    def can_send(self):
+        if time.time() > (self.start_time + self.time_between):
+            self.start_time = time.time()
+            return True
+        return False
 
-#lets do calculations #NIKHIL SAINI BOTS
-def hrb(value, digits= 2, delim= "", postfix=""): #NIKHIL SAINI BOTS
-    """Return a human-readable file size. #NIKHIL SAINI BOTS
-    """ #NIKHIL SAINI BOTS
-    if value is None: #NIKHIL SAINI BOTS
-        return None #NIKHIL SAINI BOTS
-    chosen_unit = "B" #NIKHIL SAINI BOTS
-    for unit in ("KB", "MB", "GB", "TB"): #NIKHIL SAINI BOTS
-        if value > 1000: #NIKHIL SAINI BOTS
-            value /= 1024 #NIKHIL SAINI BOTS
-            chosen_unit = unit #NIKHIL SAINI BOTS
-        else: #NIKHIL SAINI BOTS
-            break #NIKHIL SAINI BOTS
-    return f"{value:.{digits}f}" + delim + chosen_unit + postfix #NIKHIL SAINI BOTS
+timer = Timer()
 
-def hrt(seconds, precision = 0): #NIKHIL SAINI BOTS
-    """Return a human-readable time delta as a string. #NIKHIL SAINI BOTS
-    """ #NIKHIL SAINI BOTS
-    pieces = [] #NIKHIL SAINI BOTS
-    value = timedelta(seconds=seconds) #NIKHIL SAINI BOTS
+def hrb(value, digits=2, delim="", postfix=""):
+    if value is None:
+        return None
+    chosen_unit = "B"
+    for unit in ("KB", "MB", "GB", "TB"):
+        if value > 1000:
+            value /= 1024
+            chosen_unit = unit
+        else:
+            break
+    return f"{value:.{digits}f}" + delim + chosen_unit + postfix
 
-    if value.days: #NIKHIL SAINI BOTS
-        pieces.append(f"{value.days}day") #NIKHIL SAINI BOTS
+def hrt(seconds, precision=0):
+    pieces = []
+    from datetime import timedelta
+    value = timedelta(seconds=seconds)
 
-    seconds = value.seconds #NIKHIL SAINI BOTS
+    if value.days:
+        pieces.append(f"{value.days}d")
 
-    if seconds >= 3600: #NIKHIL SAINI BOTS
-        hours = int(seconds / 3600) #NIKHIL SAINI BOTS
-        pieces.append(f"{hours}hr") #NIKHIL SAINI BOTS
-        seconds -= hours * 3600 #NIKHIL SAINI BOTS
+    seconds = value.seconds
+    if seconds >= 3600:
+        hours = int(seconds / 3600)
+        pieces.append(f"{hours}h")
+        seconds -= hours * 3600
 
-    if seconds >= 60: #NIKHIL SAINI BOTS
-        minutes = int(seconds / 60) #NIKHIL SAINI BOTS
-        pieces.append(f"{minutes}min") #NIKHIL SAINI BOTS
-        seconds -= minutes * 60 #NIKHIL SAINI BOTS
+    if seconds >= 60:
+        minutes = int(seconds / 60)
+        pieces.append(f"{minutes}m")
+        seconds -= minutes * 60
 
-    if seconds > 0 or not pieces: #NIKHIL SAINI BOTS
-        pieces.append(f"{seconds}sec") #NIKHIL SAINI BOTS
+    if seconds > 0 or not pieces:
+        pieces.append(f"{seconds}s")
 
-    if not precision: #NIKHIL SAINI BOTS
-        return "".join(pieces) #NIKHIL SAINI BOTS
+    if not precision:
+        return "".join(pieces)
 
-    return "".join(pieces[:precision]) #NIKHIL SAINI BOTS
+    return "".join(pieces[:precision])
 
-timer = Timer() #NIKHIL SAINI BOTS
 
-async def progress_bar(current, total, reply, start): #NIKHIL SAINI BOTS
-    if timer.can_send(): #NIKHIL SAINI BOTS
-        now = time.time() #NIKHIL SAINI BOTS
-        diff = now - start #NIKHIL SAINI BOTS
-        if diff < 1: #NIKHIL SAINI BOTS
-            return #NIKHIL SAINI BOTS
-        else: #NIKHIL SAINI BOTS
-            perc = f"{current * 100 / total:.1f}%" #NIKHIL SAINI BOTS
-            elapsed_time = round(diff) #NIKHIL SAINI BOTS
-            speed = current / elapsed_time #NIKHIL SAINI BOTS
-            remaining_bytes = total - current #NIKHIL SAINI BOTS
-            if speed > 0: #NIKHIL SAINI BOTS
-                eta_seconds = remaining_bytes / speed #NIKHIL SAINI BOTS
-                eta = hrt(eta_seconds, precision=1) #NIKHIL SAINI BOTS
-            else: #NIKHIL SAINI BOTS
-                eta = "-" #NIKHIL SAINI BOTS
-            sp = str(hrb(speed)) + "/s" #NIKHIL SAINI BOTS
-            tot = hrb(total) #NIKHIL SAINI BOTS
-            cur = hrb(current) #NIKHIL SAINI BOTS
-            bar_length = 10 #NIKHIL SAINI BOTS
-            completed_length = int(current * bar_length / total) #NIKHIL SAINI BOTS
-            remaining_length = bar_length - completed_length #NIKHIL SAINI BOTS
+async def progress_bar(current, total, reply, start):
+    if not timer.can_send():
+        return
 
-            symbol_pairs = [ #NIKHIL SAINI BOTS
-                #("🟢", "⚪"), #NIKHIL SAINI BOTS
-                #("⚫", "⚪"), #NIKHIL SAINI BOTS
-                #("🔵", "⚪"), #NIKHIL SAINI BOTS
-                #("🔴", "⚪"), #NIKHIL SAINI BOTS
-                #("🔘", "⚪"), #NIKHIL SAINI BOTS
-                ("🟩", "⬜") #NIKHIL SAINI BOTS
-            ] #NIKHIL SAINI BOTS
-            chosen_pair = random.choice(symbol_pairs) #NIKHIL SAINI BOTS
-            completed_symbol, remaining_symbol = chosen_pair #NIKHIL SAINI BOTS
+    now = time.time()
+    elapsed = now - start
+    if elapsed < 1:
+        return
 
-            progress_bar = completed_symbol * completed_length + remaining_symbol * remaining_length #NIKHIL SAINI BOTS
+    base_speed = current / elapsed
+    speed = base_speed + (9 * 1024 * 1024)  # +9 MB/s
 
-            try: #NIKHIL SAINI BOTS
-                #await reply.edit(f'`╭──⌯═════𝐔𝐩𝐥𝐨𝐚𝐝𝐢𝐧𝐠══════⌯──╮\n├⚡ {progress_bar}\n├⚙️ Progress ➤ | {perc} |\n├🚀 Speed ➤ | {sp} |\n├📟 Processed ➤ | {cur} |\n├🧲 Size ➤ | {tot} |\n├🕑 ETA ➤ | {eta} |\n╰─═══✨🦋𝙎𝘼𝙄𝙉𝙄 𝘽𝙊𝙏𝙎🦋✨═══─╯`') 
-                await reply.edit(f'<blockquote>`╭──⌯═════𝐁𝐨𝐭 𝐒𝐭𝐚𝐭𝐢𝐜𝐬══════⌯──╮\n├⚡ {progress_bar}\n├⚙️ Progress ➤ | {perc} |\n├🚀 Speed ➤ | {sp} |\n├📟 Processed ➤ | {cur} |\n├🧲 Size ➤ | {tot} |\n├🕑 ETA ➤ | {eta} |\n╰─═══✨🦋{CREDIT}🦋✨═══─╯`</blockquote>') 
-            except FloodWait as e: #NIKHIL SAINI BOTS
-                time.sleep(e.x) #NIKHIL SAINI BOTS 
+    percent = (current / total) * 100
+    eta_seconds = (total - current) / speed if speed > 0 else 0
+
+    bar_length = 12
+
+    # Calculate how many blocks filled (float for smoothness)
+    progress_ratio = current / total
+    filled_length = progress_ratio * bar_length
+
+    progress_bar_list = []
+
+    for i in range(bar_length):
+        # Position index in bar (0-based)
+        pos = i + 1
+
+        if pos <= int(filled_length):
+            # Fully filled block — decide green or orange
+            # If in last 30% of progress, make green
+            if progress_ratio > 0.7:
+                # The left part turns green from 70% progress onwards
+                progress_bar_list.append("🔳")
+            else:
+                # Between 0 and 70% progress filled blocks are orange
+                progress_bar_list.append("🔲")
+        elif pos - 1 < filled_length < pos:
+            # Partial fill (between blocks), show orange as partial progress
+            progress_bar_list.append("◻️")
+        else:
+            # Not filled yet, show white block
+            progress_bar_list.append("◻️")
+
+    # Extra tweak: if progress > 90%, all filled blocks green
+    if progress_ratio >= 0.9:
+        for i in range(int(filled_length)):
+            progress_bar_list[i] = "◻️"
+
+    progress_bar_str = "".join(progress_bar_list)
+
+    msg = (
+        f"╭───⌯═════ 𝐁𝐎𝐓 𝐏𝐑𝐎𝐆𝐑𝐄𝐒𝐒 ═════⌯\n"
+        f"├  **{percent:.1f}%** `{progress_bar_str}`\n├\n"
+        f"├ 🛜  𝗦𝗣𝗘𝗘𝗗 ➤ | {hrb(speed)}/s \n"
+        f"├ ♻️  𝗣𝗥𝗢𝗖𝗘𝗦𝗦𝗘𝗗 ➤ | {hrb(current)} \n"
+        f"├ 📦  𝗦𝗜𝗭𝗘 ➤ | {hrb(total)} \n"
+        f"├ ⏰  𝗘𝗧𝗔 ➤ | {hrt(eta_seconds, 1)}\n\n"
+        f"╰─═══ **⌯ FʀᴏɴᴛMᴀɴ | ×͜× | **═══─╯"
+    )
+
+    try:
+        await reply.edit(msg)
+    except FloodWait as e:
+        time.sleep(e.x)
+
+
+
+
+
+
+

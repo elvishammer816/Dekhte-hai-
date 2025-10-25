@@ -1,26 +1,64 @@
-#🇳‌🇮‌🇰‌🇭‌🇮‌🇱‌
-# Add your details here and then deploy by clicking on HEROKU Deploy button
 import os
 from os import environ
 
-API_ID = int(environ.get("API_ID", "22182189"))
-API_HASH = environ.get("API_HASH", "5e7c4088f8e23d0ab61e29ae11960bf5")
-BOT_TOKEN = environ.get("BOT_TOKEN", "")
+# API Configuration
+API_ID = int(os.environ.get("API_ID", "31400"))
+API_HASH = os.environ.get("API_HASH", "ef67c500cc8c9917f")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 
-OWNER = int(environ.get("OWNER", "5680454765"))
-CREDIT = environ.get("CREDIT", "𝙎𝘼𝙄𝙉𝙄 𝘽𝙊𝙏𝙎")
-cookies_file_path = os.getenv("cookies_file_path", "youtube_cookies.txt")
+CREDIT = os.environ.get("CREDIT", "⌯ Prunus💋 | ×͜× |")
+# MongoDB Configuration
+DATABASE_NAME = os.environ.get("DATABASE_NAME", "add name")
+DATABASE_URL = os.environ.get("DATABASE_URL", "mongodb+srv://Dehghgfv-Thanos")  # Add your own atlas db
+MONGO_URL = DATABASE_URL  # For auth system
 
-TOTAL_USER = os.environ.get('TOTAL_USERS', '5680454765').split(',')
-TOTAL_USERS = [int(user_id) for user_id in TOTAL_USER]
+# Owner and Admin Configuration
+OWNER_ID = int(os.environ.get("OWNER_ID", "7361052650"))
+ADMINS = [int(x) for x in os.environ.get("ADMINS", "7361052650").split()]  # Default to owner ID
 
-AUTH_USER = os.environ.get('AUTH_USERS', '5680454765').split(',')
-AUTH_USERS = [int(user_id) for user_id in AUTH_USER]
-if int(OWNER) not in AUTH_USERS:
-    AUTH_USERS.append(int(OWNER))
-  
-# .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
-api_url = "http://master-api-v3.vercel.app/"
-api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzkxOTMzNDE5NSIsInRnX3VzZXJuYW1lIjoi4p61IFtvZmZsaW5lXSIsImlhdCI6MTczODY5MjA3N30.SXzZ1MZcvMp5sGESj0hBKSghhxJ3k1GTWoBUbivUe1I"
-# .....,.....,.......,...,.......,....., .....,.....,.......,...,.
+# Channel Configuration
+PREMIUM_CHANNEL = "https://t.me/+zzgp8DUgaic3MzRl"
+# Thumbnail Configuration
+THUMBNAILS = list(map(str, os.environ.get("THUMBNAILS", "https://files.catbox.moe/fh731v.jpg").split())) # Image Link For Default Thumbnail 
+
+# Web Server Configuration
+WEB_SERVER = os.environ.get("WEB_SERVER", "False").lower() == "true"
+WEBHOOK = True  # Don't change this
+PORT = int(os.environ.get("PORT", 8000))
+
+# Message Formats
+AUTH_MESSAGES = {
+    "subscription_active": """<b>🎉 Subscription Activated!</b>
+
+<blockquote>Your subscription has been activated and will expire on {expiry_date}.
+You can now use the bot!</blockquote>\n\n Type /start to start uploading """,
+
+    "subscription_expired": """<b>⚠️ Your Subscription Has Ended</b>
+
+<blockquote>Your access to the bot has been revoked as your subscription period has expired.
+Please contact the admin to renew your subscription.</blockquote>""",
+
+    "user_added": """<b>✅ User Added Successfully!</b>
+
+<blockquote>👤 Name: {name}
+🆔 User ID: {user_id}
+📅 Expiry: {expiry_date}</blockquote>""",
+
+    "user_removed": """<b>✅ User Removed Successfully!</b>
+
+<blockquote>User ID {user_id} has been removed from authorized users.</blockquote>""",
+
+    "access_denied": """<b>⚠️ Access Denied!</b>
+
+<blockquote>You are not authorized to use this bot.
+Please contact the admin @ItsUGBot to get access.</blockquote>""",
+
+    "not_admin": "⚠️ You are not authorized to use this command!",
+    
+    "invalid_format": """❌ <b>Invalid Format!</b>
+
+<blockquote>Use format: {format}</blockquote>"""
+}
+
+
 
