@@ -376,19 +376,26 @@ async def start(bot: Client, m: Message):
             is_admin = db.is_admin(m.from_user.id)
             
             if not is_authorized:
-                await m.reply_photo(
-                    photo=photologo,
-                    caption="**Mʏ Nᴀᴍᴇ [DRM Wɪᴢᴀʀᴅ 🦋](https://t.me/DRM_Wizardbot)\n\nYᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴜꜱᴇ ᴛʜɪꜱ ʙᴏᴛ\nCᴏɴᴛᴀᴄᴛ [⌯ FʀᴏɴᴛMᴀɴ | ×͜× |](https://t.me/Mrfrontman001) ғᴏʀ ᴀᴄᴄᴇꜱꜱ**",
-                    reply_markup=InlineKeyboardMarkup([
-    [
-        InlineKeyboardButton("⌯ FʀᴏɴᴛMᴀɴ | ×͜× |", url="https://t.me/MrFrontMan001")
-    ],
-    [
-        InlineKeyboardButton("ғᴇᴀᴛᴜʀᴇꜱ 🪔", callback_data="help"),
-        InlineKeyboardButton("ᴅᴇᴛᴀɪʟꜱ 🦋", callback_data="help")
-    ]
-])
-                )
+                # Fallback-safe unauthorized message
+                try:
+                    await m.reply_photo(
+                        photo=photologo,
+                        caption="**Mʏ Nᴀᴍᴇ [DRM Wɪᴢᴀʀᴅ 🦋](https://t.me/DRM_Wizardbot)\n\nYᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀᴄᴄᴇꜱꜱ ᴛᴏ ᴜꜱᴇ ᴛʜɪꜱ ʙᴏᴛ\nCᴏɴᴛᴀᴄᴛ [⌯ FʀᴏɴᴛMᴀɴ | ×͜× |](https://t.me/Mrfrontman001) ғᴏʀ ᴀᴄᴄᴇꜱꜱ**",
+                        reply_markup=InlineKeyboardMarkup([
+                            [InlineKeyboardButton("⌯ FʀᴏɴᴛMᴀɴ | ×͜× |", url="https://t.me/MrFrontMan001")],
+                            [InlineKeyboardButton("ғᴇᴀᴛᴜʀᴇꜱ 🪔", callback_data="help"),
+                             InlineKeyboardButton("ᴅᴇᴛᴀɪʟꜱ 🦋", callback_data="help")]
+                        ])
+                    )
+                except Exception:
+                    await m.reply_text(
+                        "<b>Access Denied</b>\n\n"
+                        "You need an active subscription to use this bot.\n"
+                        "Please contact admin to get premium access.",
+                        reply_markup=InlineKeyboardMarkup([[
+                            InlineKeyboardButton("💫 Get Premium Access", url="https://t.me/MrFrontMan001")
+                        ]])
+                    )
                 return
                 
             commands_list = (
