@@ -1497,8 +1497,4 @@ async def _startup():
 
 if __name__ == "__main__":
     # Run once; do not auto-restart to avoid spam and to surface the real error in logs
-    asyncio.run(_startup())_name__ == "__main__":
-    reset_and_set_commands()
-    notify_owner() 
-
-# Auto-restart the bot if it throws due to transient host
+    asyncio.run(_startup())
