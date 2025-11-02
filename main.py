@@ -437,6 +437,9 @@ auth_filter = filters.create(auth_check_filter)
 async def ping_cmd(client: Client, message: Message):
     await message.reply_text("pong")
 
+@bot.on_message(filters.command(["whoami"]) & filters.private)
+async def who")
+
 @bot.on_message(~auth_filter & filters.private & filters.command)
 async def unauthorized_handler(client, message: Message):
     await message.reply(
@@ -1482,8 +1485,11 @@ async def _startup():
     try:
         print("Starting bot...")
         await bot.start()
+        me = await bot.get_me()
+        print(f"Bot started as @{me.username} (id={me.id})")
         print("Bot started, setting commands...")
-        # Only set commands and notify after the bot is actually up
+        # Ensure long polling mode every start
+        ensure_long_polling()
         reset_and_set_commands()
         if NOTIFY_ON_START:
             notify_owner()
@@ -1498,7 +1504,8 @@ async def _startup():
             print("Stopping bot...")
             await bot.stop()
         except Exception:
-            pass
+            _codepanews</s
+  pass
 
 if __name__ == "__main__":
     # Run once; do not auto-restart to avoid spam and to surface the real error in logs
