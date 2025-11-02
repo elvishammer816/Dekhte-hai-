@@ -28,14 +28,30 @@ from db import Database
 
 
 
+from imageio_ffmpeg import get_ffmpeg_exe
+FFMPEG_BIN = get_ffmpeg_exe()
+
+def _parse_duration_str(dur_str: str) -> float:
+    # dur_str like "00:03:21.45"
+    try:
+        h, m, s = dur_str.split(":")
+        return int(h) * 3600 + int(m) * 60 + float(s)
+    except Exception:
+        return 0.0
+
 def get_duration(filename):
+    # Use ffmpeg to probe duration to avoid dependency on ffprobe
     result = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_entries",
-         "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", filename],
+        [FFMPEG_BIN, "-i", filename],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
     )
-    return float(result.stdout)
+    out = result.stdout.decode(errors="ignore")
+    # Find "Duration: 00:00:12.34"
+    match = re.search(r"Duration:\s*(\d{2}:\d{2}:\d{2}\.\d+)", out)
+    if match:
+        return _parse_duration_str(match.group(1))
+    return 0.0
 
 def split_large_video(file_path, max_size_mb=1900):
     size_bytes = os.path.getsize(file_path)
@@ -53,7 +69,7 @@ def split_large_video(file_path, max_size_mb=1900):
     for i in range(parts):
         output_file = f"{base_name}_part{i+1}.mp4"
         cmd = [
-            "ffmpeg", "-y",
+            FFMPEG_BIN, "-y",
             "-i", file_path,
             "-ss", str(int(part_duration * i)),
             "-t", str(int(part_duration)),
@@ -68,12 +84,14 @@ def split_large_video(file_path, max_size_mb=1900):
 
 
 def duration(filename):
-    result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
-                             "format=duration", "-of",
-                             "default=noprint_wrappers=1:nokey=1", filename],
+    result = subprocess.run([FFMPEG_BIN, "-i", filename],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
-    return float(result.stdout)
+    out = result.stdout.decode(errors="ignore")
+    match = re.search(r"Duration:\s*(\d{2}:\d{2}:\d{2}\.\d+)", out)
+    if match:
+        return _parse_duration_str(match.group(1))
+    return 0.0
 
 
 def get_mps_and_keys(api_url):
@@ -225,7 +243,7 @@ async def decrypt_and_merge_video(mpd_url, keys_string, output_path, output_name
         if not video_decrypted or not audio_decrypted:
             raise FileNotFoundError("Decryption failed: video or audio file not found.")
 
-        cmd4 = f'ffmpeg -i "{output_path}/video.mp4" -i "{output_path}/audio.m4a" -c copy "{output_path}/{output_name}.mp4"'
+        cmd4 = f'"{FFMPEG_BIN}" -i "{output_path}/video.mp4" -i "{output_path}/audio.m4a" -c copy "{output_path}/{output_name}.mp4"'
         print(f"Running command: {cmd4}")
         os.system(cmd4)
         if (output_path / "video.mp4").exists():
@@ -238,8 +256,11 @@ async def decrypt_and_merge_video(mpd_url, keys_string, output_path, output_name
         if not filename.exists():
             raise FileNotFoundError("Merged video file not found.")
 
-        cmd5 = f'ffmpeg -i "{filename}" 2>&1 | grep "Duration"'
-        duration_info = os.popen(cmd5).read()
+        # Probe duration via ffmpeg and print
+        result = subprocess.run([FFMPEG_BIN, "-i", str(filename)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        out = result.stdout.decode(errors="ignore")
+        match = re.search(r"Duration:\s*(\\d{2}:\\d{2}:\\d{2}\\.\\d+)", out)
+        duration_info = match.group(1) if match else "unknown"
         print(f"Duration info: {duration_info}")
 
         return str(filename)
@@ -419,23 +440,15 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
             
             # Generate thumbnail at 10s
             subprocess.run(
-                f'ffmpeg -i "{filename}" -ss 00:00:10 -vframes 1 -q:v 2 -y "{temp_thumb}"',
+                f'"{FFMPEG_BIN}" -i "{filename}" -ss 00:00:10 -vframes 1 -q:v 2 -y "{temp_thumb}"',
                 shell=True
             )
 
             # ✅ Only apply watermark if watermark != "/d"
             if os.path.exists(temp_thumb) and (watermark and watermark.strip() != "/d"):
                 text_to_draw = watermark.strip()
-                try:
-                    # Probe image width for better scaling
-                    probe_out = subprocess.check_output(
-                        f'ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0:s=x "{temp_thumb}"',
-                        shell=True,
-                        stderr=subprocess.DEVNULL,
-                    ).decode().strip()
-                    img_width = int(probe_out.split('x')[0]) if 'x' in probe_out else int(probe_out)
-                except Exception:
-                    img_width = 1280
+                # Default width when probing not available on target host
+                img_width = 1280
 
                 # Base size relative to width, then adjust by text length
                 base_size = max(28, int(img_width * 0.075))
@@ -456,9 +469,9 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
                 safe_text = text_to_draw.replace("'", "\\'")
 
                 text_cmd = (
-                    f'ffmpeg -i "{temp_thumb}" -vf '
+                    f'"{FFMPEG_BIN}" -i "{temp_thumb}" -vf '
                     f'"drawbox=y=0:color=black@0.35:width=iw:height={box_h}:t=fill,'
-                    f'drawtext=fontfile=font.ttf:text=\'{safe_text}\':fontcolor=white:'
+                    f'drawtext=fontfile=font.ttf:text=\\'{safe_text}\\':fontcolor=white:'
                     f'fontsize={font_size}:x=(w-text_w)/2:y=(({box_h})-text_h)/2" '
                     f'-c:v mjpeg -q:v 2 -y "{temp_thumb}"'
                 )
