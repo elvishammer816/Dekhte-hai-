@@ -445,7 +445,9 @@ async def ping_cmd(client: Client, message: Message):
     await message.reply_text("pong")
 
 @bot.on_message(filters.command(["whoami"]) & filters.private)
-async def who")
+async def whoami_cmd(client: Client, message: Message):
+    me = await client.get_me()
+    await message.reply_text(f"Running as @{me.username} (id={me.id})")
 
 @bot.on_message(~auth_filter & filters.private & filters.command)
 async def unauthorized_handler(client, message: Message):
@@ -1511,8 +1513,7 @@ async def _startup():
             print("Stopping bot...")
             await bot.stop()
         except Exception:
-            _codepanews</s
-  pass
+            pass
 
 if __name__ == "__main__":
     # Run once; do not auto-restart to avoid spam and to surface the real error in logs
