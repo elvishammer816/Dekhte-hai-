@@ -438,6 +438,9 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
         if thumb in ["/d", "no"] or not os.path.exists(thumb):
             temp_thumb = f"downloads/thumb_{os.path.basename(filename)}.jpg"
             
+            # Debug: show ffmpeg binary path being used
+            print(f"[debug] Using ffmpeg binary at: {FFMPEG_BIN}")
+
             # Generate thumbnail at 10s
             subprocess.run(
                 f'"{FFMPEG_BIN}" -i "{filename}" -ss 00:00:10 -vframes 1 -q:v 2 -y "{temp_thumb}"',
