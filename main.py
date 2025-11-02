@@ -1462,7 +1462,29 @@ def reset_and_set_commands():
 
 
 
+import traceback
+import asyncio
+
+async def _startup():
+    try:
+        await bot.start()
+        # Only set commands and notify after the bot is actually up
+        reset_and_set_commands()
+        notify_owner()
+        await idle()
+    except Exception as e:
+        print("Fatal error during bot startup:")
+        traceback.print_exc()
+        raise
+    finally:
+        try:
+            await bot.stop()
+        except Exception:
+            pass
+
 if __name__ == "__main__":
+    # Run once; do not auto-restart to avoid spam and to surface the real error in logs
+    asyncio.run(_startup())_name__ == "__main__":
     reset_and_set_commands()
     notify_owner() 
 
