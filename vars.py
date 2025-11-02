@@ -25,7 +25,12 @@ THUMBNAILS = list(map(str, os.environ.get("THUMBNAILS", "https://files.catbox.mo
 # Web Server Configuration
 WEB_SERVER = os.environ.get("WEB_SERVER", "False").lower() == "true"
 WEBHOOK = True  # Don't change this
-PORT = int(os.environ.get("PORT", 8000))
+# Be tolerant of malformed PORT values from hosting dashboards
+_port_raw = os.environ.get("PORT", "8000")
+try:
+    PORT = int(_port_raw)
+except (TypeError, ValueError):
+    PORT = 8000
 
 # Message Formats
 AUTH_MESSAGES = {
