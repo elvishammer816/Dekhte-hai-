@@ -432,6 +432,11 @@ def auth_check_filter(_, client, message):
 
 auth_filter = filters.create(auth_check_filter)
 
+# Basic health check to confirm bot receives updates
+@bot.on_message(filters.command(["ping"]) & filters.private)
+async def ping_cmd(client: Client, message: Message):
+    await message.reply_text("pong")
+
 @bot.on_message(~auth_filter & filters.private & filters.command)
 async def unauthorized_handler(client, message: Message):
     await message.reply(
@@ -1436,8 +1441,16 @@ def notify_owner():
     }
     requests.post(url, data=data)
 
+def ensure_long_polling():
+    # Delete any existing webhook so long polling works
+    try:
+        requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteWebhook", timeout=10)
+    except Exception as e:
+        print(f"deleteWebhook failed: {e}")
 
 def reset_and_set_commands():
+    # Ensure long polling mode
+    ensure_long_polling()
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/setMyCommands"
     # Reset
     requests.post(url, json={"commands": []})
@@ -1452,7 +1465,7 @@ def reset_and_set_commands():
     {"command": "t2t", "description": "📝 ᴛᴇxᴛ → .ᴛxᴛ ɢᴇɴᴇʀᴀᴛᴏʀ"},
     {"command": "id", "description": "🆔 ɢᴇᴛ ʏᴏᴜʀ ᴜꜱᴇʀ ɪᴅ"},
     {"command": "add", "description": "▶️ Add Auth "},
-    {"command": "info", "description": "ℹ️ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ"},
+    {"command": "info", "description": "ℹ️ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ɪɴꜰᴏʀᴍାᴛɪᴏɴ"},
     {"command": "remove", "description": "⏸️ Remove Auth "},
     {"command": "users", "description": "👨‍👨‍👧‍👦 All Users"},
 ]
