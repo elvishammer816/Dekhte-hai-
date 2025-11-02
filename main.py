@@ -168,6 +168,57 @@ async def get_log_channel_cmd(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"❌ Error: {str(e)}")
 
+# ---------- Channel authorization commands ----------
+@bot.on_message(filters.command("authorize_channel") & filters.private)
+async def authorize_channel_cmd(client: Client, message: Message):
+    try:
+        if not db.is_admin(message.from_user.id):
+            await message.reply_text("⚠️ You are not authorized to use this command.")
+            return
+        args = message.text.split()
+        if len(args) != 2:
+            await message.reply_text("❌ Invalid format!\nUse: /authorize_channel -100123456789")
+            return
+        channel_id = int(args[1])
+        if db.authorize_channel(channel_id, client.me.username):
+            await message.reply_text(f"✅ Authorized channel: `{channel_id}`")
+        else:
+            await message.reply_text("❌ Failed to authorize channel.")
+    except Exception as e:
+        await message.reply_text(f"❌ Error: {str(e)}")
+
+@bot.on_message(filters.command("unauthorize_channel") & filters.private)
+async def unauthorize_channel_cmd(client: Client, message: Message):
+    try:
+        if not db.is_admin(message.from_user.id):
+            await message.reply_text("⚠️ You are not authorized to use this command.")
+            return
+        args = message.text.split()
+        if len(args) != 2:
+            await message.reply_text("❌ Invalid format!\nUse: /unauthorize_channel -100123456789")
+            return
+        channel_id = int(args[1])
+        if db.unauthorize_channel(channel_id, client.me.username):
+            await message.reply_text(f"✅ Un-authorized channel: `{channel_id}`")
+        else:
+            await message.reply_text("❌ Failed to un-authorize channel.")
+    except Exception as e:
+        await message.reply_text(f"❌ Error: {str(e)}")
+
+@bot.on_message(filters.command("channels") & filters.private)
+async def list_channels_cmd(client: Client, message: Message):
+    try:
+        if not db.is_admin(message.from_user.id):
+            await message.reply_text("⚠️ You are not authorized to use this command.")
+            return
+        chs = db.list_authorized_channels(client.me.username)
+        if not chs:
+            await message.reply_text("📋 No authorized channels.")
+            return
+        await message.reply_text("📋 Authorized channels:\n" + "\n".join([f"• `{c}`" for c in chs]))
+    except Exception as e:
+        await message.reply_text(f"❌ Error: {str(e)}")
+
 # Re-register auth commands
 bot.add_handler(MessageHandler(auth.add_user_cmd, filters.command("add") & filters.private))
 bot.add_handler(MessageHandler(auth.remove_user_cmd, filters.command("remove") & filters.private))
@@ -793,10 +844,10 @@ async def txt_handler(bot: Client, m: Message):
                 url = response.json()['url']  
                 
             elif "tencdn.classplusapp" in url:
-                headers = {'host': 'api.classplusapp.com', 'x-access-token': f'{raw_text4}', 'accept-language': 'EN', 'api-version': '18', 'app-version': '1.4.73.2', 'build-number': '35', 'connection': 'Keep-Alive', 'content-type': 'application/json', 'device-details': 'Xiaomi_Redmi 7_SDK-32', 'device-id': 'c28d3cb16bbdac01', 'region': 'IN', 'user-agent': 'Mobile-Android', 'webengage-luid': '00000187-6fe4-5d41-a530-26186858be4c', 'accept-encoding': 'gzip'}
-                params = {"url": f"{url}"}
-                response = requests.get('https://api.classplusapp.com/cams/uploader/video/jw-signed-url', headers=headers, params=params)
-                url = response.json()['url']  
+                # Route via external API for non-DRM signed URL
+                user_id = m.from_user.id
+                api_url = f"https://head-micheline-botupdatevip-f1804c58.koyeb.app/get_keys?url={url}@botupdatevip4u&user_id={user_id}"
+                url = helper.get_mps_and_keys3(api_url)  
            
             elif 'videos.classplusapp' in url:
                 # Use external API to get signed non-DRM URL

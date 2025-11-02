@@ -345,6 +345,52 @@ class Database:
         except Exception as e:
             print(f"Error setting log channel: {str(e)}")
             return False
+
+    # ---------- Channel authorization helpers ----------
+    def is_channel_authorized(self, channel_id: int, bot_username: str) -> bool:
+        """Check if a channel is authorized for a given bot"""
+        try:
+            settings = self.db.bot_settings.find_one({"bot_username": bot_username}) or {}
+            authorized = settings.get("authorized_channels", [])
+            return int(channel_id) in authorized
+        except Exception as e:
+            print(f"{Fore.RED}Channel auth check error: {str(e)}{Style.RESET_ALL}")
+            return False
+
+    def authorize_channel(self, channel_id: int, bot_username: str) -> bool:
+        """Add a channel to authorized list for the bot"""
+        try:
+            self.db.bot_settings.update_one(
+                {"bot_username": bot_username},
+                {"$addToSet": {"authorized_channels": int(channel_id)}},
+                upsert=True
+            )
+            return True
+        except Exception as e:
+            print(f"{Fore.RED}Authorize channel error: {str(e)}{Style.RESET_ALL}")
+            return False
+
+    def unauthorize_channel(self, channel_id: int, bot_username: str) -> bool:
+        """Remove a channel from authorized list for the bot"""
+        try:
+            self.db.bot_settings.update_one(
+                {"bot_username": bot_username},
+                {"$pull": {"authorized_channels": int(channel_id)}},
+                upsert=True
+            )
+            return True
+        except Exception as e:
+            print(f"{Fore.RED}Unauthorize channel error: {str(e)}{Style.RESET_ALL}")
+            return False
+
+    def list_authorized_channels(self, bot_username: str) -> List[int]:
+        """Return list of authorized channels for the bot"""
+        try:
+            settings = self.db.bot_settings.find_one({"bot_username": bot_username}) or {}
+            return settings.get("authorized_channels", [])
+        except Exception as e:
+            print(f"{Fore.RED}List authorized channels error: {str(e)}{Style.RESET_ALL}")
+            return []
             
     def list_bot_usernames(self) -> List[str]:
         """
