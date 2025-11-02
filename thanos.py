@@ -83,6 +83,21 @@ def get_mps_and_keys(api_url):
     keys = response_json.get('keys')
     return mpd, keys
 
+# Compatibility with external API docs you shared:
+# DRM: returns both mpd_url and keys
+def get_mps_and_keys2(api_url):
+    response = requests.get(api_url, timeout=40)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("mpd_url"), data.get("keys")
+
+# Non-DRM: returns a direct playable URL
+def get_mps_and_keys3(api_url):
+    response = requests.get(api_url, timeout=40)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("url")
+
 
    
 def exec(cmd):
