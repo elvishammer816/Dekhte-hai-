@@ -89,6 +89,20 @@ bot = Client(
     in_memory=True
 )
 
+# --- Optional keepalive web server for platforms that sleep workers ---
+# Start a small HTTP server in a background thread so Nixpacks/Web hosts don't suspend the process
+import threading
+def _start_keepalive_server():
+    try:
+        from app import app as flask_app
+        flask_app.run(host="0.0.0.0", port=PORT, use_reloader=False)
+    except Exception as e:
+        print(f"Keepalive server error: {e}")
+
+if WEB_SERVER:
+    t = threading.Thread(target=_start_keepalive_server, daemon=True)
+    t.start()
+
 # Register command handlers
 register_clean_handler(bot)
 
@@ -1452,4 +1466,4 @@ if __name__ == "__main__":
     reset_and_set_commands()
     notify_owner() 
 
-bot.run()
+# Auto-restart the bot if it throws due to transient host
