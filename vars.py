@@ -32,6 +32,9 @@ try:
 except (TypeError, ValueError):
     PORT = 8000
 
+# Notifications
+NOTIFY_ON_START = os.environ.get("NOTIFY_ON_START", "False").lower() == "true"
+
 # Message Formats
 AUTH_MESSAGES = {
     "subscription_active": """<b>🎉 Subscription Activated!</b>

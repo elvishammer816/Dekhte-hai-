@@ -78,15 +78,15 @@ userbot = None
 timeout_duration = 300  # 5 minutes
 
 
-# Initialize bot with random session
+# Initialize bot with conservative resources for free hosts
 bot = Client(
     "ugx",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    workers=300,
-    sleep_threshold=60,
-    in_memory=True
+    workers=8,            # reduce worker threads
+    sleep_threshold=30,   # lower sleep threshold
+    in_memory=False       # avoid in-memory session to reduce RAM
 )
 
 # --- Optional keepalive web server for platforms that sleep workers ---
@@ -1480,10 +1480,14 @@ import asyncio
 
 async def _startup():
     try:
+        print("Starting bot...")
         await bot.start()
+        print("Bot started, setting commands...")
         # Only set commands and notify after the bot is actually up
         reset_and_set_commands()
-        notify_owner()
+        if NOTIFY_ON_START:
+            notify_owner()
+        print("Entering idle...")
         await idle()
     except Exception as e:
         print("Fatal error during bot startup:")
@@ -1491,6 +1495,7 @@ async def _startup():
         raise
     finally:
         try:
+            print("Stopping bot...")
             await bot.stop()
         except Exception:
             pass
