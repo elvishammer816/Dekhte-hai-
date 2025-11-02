@@ -471,13 +471,13 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
                 # Simple escaping for single quotes in text
                 safe_text = text_to_draw.replace("'", "\\'")
 
-                text_cmd = (
-                    f'"{FFMPEG_BIN}" -i "{temp_thumb}" -vf '
-                    f'"drawbox=y=0:color=black@0.35:width=iw:height={box_h}:t=fill,'
-                    f'drawtext=fontfile=font.ttf:text=\\'{safe_text}\\':fontcolor=white:'
-                    f'fontsize={font_size}:x=(w-text_w)/2:y=(({box_h})-text_h)/2" '
-                    f'-c:v mjpeg -q:v 2 -y "{temp_thumb}"'
+                # Build filter string cleanly to avoid Python escape issues
+                filter_str = (
+                    f"drawbox=y=0:color=black@0.35:width=iw:height={box_h}:t=fill,"
+                    f"drawtext=fontfile=font.ttf:text='{safe_text}':fontcolor=white:"
+                    f"fontsize={font_size}:x=(w-text_w)/2:y=(({box_h})-text_h)/2"
                 )
+                text_cmd = f'"{FFMPEG_BIN}" -i "{temp_thumb}" -vf "{filter_str}" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'
                 subprocess.run(text_cmd, shell=True)
             
             thumbnail = temp_thumb if os.path.exists(temp_thumb) else None
