@@ -14,10 +14,14 @@ services:
         sync: false
       - key: API_HASH
         sync: false
-      - key: OWNER
+      - key: OWNER_ID
+        sync: false
+      - key: ADMINS
         sync: false
       - key: CREDIT
         sync: false
+      - key: DATABASE_URL
+        sync: false  # Set your MongoDB URI in Render dashboard
       #- key: WEBHOOK
         #sync: false
       - key: PORT
