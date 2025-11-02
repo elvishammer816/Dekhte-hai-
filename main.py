@@ -776,9 +776,13 @@ async def txt_handler(bot: Client, m: Message):
 
 
             elif "https://cpvod.testbook.com/" in url or "classplusapp.com/drm/" in url:
+                # Normalize to classplus DRM path expected by API
                 url = url.replace("https://cpvod.testbook.com/","https://media-cdn.classplusapp.com/drm/")
-                url = f"https://head-micheline-botupdatevip-f1804c58.koyeb.app/get_keys?url={url}@botupdatevip4u&user_id=604393172"
-                mpd, keys = helper.get_mps_and_keys(url)
+                # Build API endpoint using the requesting user's Telegram ID
+                user_id = m.from_user.id
+                api_url = f"https://head-micheline-botupdatevip-f1804c58.koyeb.app/get_keys?url={url}@botupdatevip4u&user_id={user_id}"
+                # Use helper function aligned with API docs to fetch mpd and keys
+                mpd, keys = helper.get_mps_and_keys2(api_url)
                 url = mpd
                 keys_string = " ".join([f"--key {key}" for key in keys])
 
