@@ -26,7 +26,9 @@ from urllib.parse import urljoin
 from vars import *  # Add this import
 from db import Database
 
-
+# Suppress imageio-ffmpeg deprecation warning about pkg_resources
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="imageio_ffmpeg._utils")
 
 from imageio_ffmpeg import get_ffmpeg_exe
 FFMPEG_BIN = get_ffmpeg_exe()
